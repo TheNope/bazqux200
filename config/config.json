@@ -1,0 +1,6 @@
+{
+    "libraryConfig": {
+        "location": "test-library/library",
+        "condensedLocation": "test-library/condensed"
+    }
+}
