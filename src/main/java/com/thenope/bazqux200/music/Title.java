@@ -1,35 +1,49 @@
 package com.thenope.bazqux200.music;
 
 import com.thenope.bazqux200.util.PlayingState;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 import java.nio.file.Path;
 
 public class Title {
     private Path path;
-    private PlayingState playingState;
-    private String name;
+    private ObjectProperty<PlayingState> playingState;
+    private StringProperty name;
 
     public Title(Path titlePath) {
         path = titlePath;
-        name = titlePath.toString();
-        playingState = PlayingState.INACTIVE;
+        name = new SimpleStringProperty(titlePath.toString());
+        playingState = new SimpleObjectProperty<>(PlayingState.INACTIVE);
+    }
+
+    public String getPlayingState() {
+        return playingState.toString();
+    }
+
+    public ObjectProperty<PlayingState> playingStateProperty() {
+        return playingState;
     }
 
     public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
         return name;
     }
 
     public void play() {
-        playingState = PlayingState.PLAYING;
-        System.out.println(name);
+        this.playingState = new SimpleObjectProperty<>(PlayingState.PLAYING);
     }
 
     public void pause() {
-        playingState = PlayingState.PAUSED;
-        System.out.println(name);
+        this.playingState = new SimpleObjectProperty<>(PlayingState.PAUSED);
     }
 
     public void setInactive() {
-        playingState = PlayingState.INACTIVE;
+        this.playingState = new SimpleObjectProperty<>(PlayingState.INACTIVE);
     }
 }

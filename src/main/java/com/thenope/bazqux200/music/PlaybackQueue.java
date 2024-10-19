@@ -17,7 +17,14 @@ public class PlaybackQueue {
         playingState = PlayingState.INACTIVE;
     }
 
+    public ArrayList<Title> getQueue() {
+        return queue;
+    }
+
     public void setQueue(ArrayList<Title> newQueue) {
+        if(isReady() && (currentTitle != null)) {
+            currentTitle.setInactive();
+        }
         this.queue = newQueue;
         this.currentTitleIndex = 0;
         this.playingState = PlayingState.PAUSED;

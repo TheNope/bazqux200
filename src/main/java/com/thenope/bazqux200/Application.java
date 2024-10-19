@@ -10,7 +10,8 @@ import java.util.Objects;
 
 
 public class Application extends javafx.application.Application {
-    static PlaybackQueue playbackQueue = new PlaybackQueue();
+    static PlaybackQueue currentPlaybackQueue = new PlaybackQueue();
+    static PlaybackQueue potentialPlaybackQueue = new PlaybackQueue();
 
     @Override
     public void start(Stage stage) throws IOException {

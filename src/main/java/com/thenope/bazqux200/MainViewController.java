@@ -1,10 +1,11 @@
 package com.thenope.bazqux200;
 
+import com.thenope.bazqux200.music.PlaybackQueue;
 import com.thenope.bazqux200.music.Title;
 import com.thenope.bazqux200.music.Playlist;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.util.Callback;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import static com.thenope.bazqux200.util.ObservablePlaylists.getObservablePlaylists;
 import static com.thenope.bazqux200.util.ObservableTitles.getObservableTitles;
@@ -14,94 +15,89 @@ public class MainViewController {
     private TableView<Playlist> playlistTableView;
 
     @FXML
-    private TableColumn<String, String> playlistNameColumn;
+    private TableColumn<Playlist, String> playlistNameColumn;
 
     @FXML
     private TableView<Title> titleTableView;
 
     @FXML
+    private TableColumn<Title, String> playingColumn;
+
+    @FXML
+    private TableColumn<Title, String> titleNameColumn;
+
+    @FXML
+    private TableColumn<Title, String> trackColumn;
+
+    @FXML
+    private TableColumn<Title, String> albumColumn;
+
+    @FXML
+    private TableColumn<Title, String> durationColumn;
+
+    @FXML
     protected void onPlayButtonClick() {
-        if(Application.playbackQueue.isReady()) {
-            Application.playbackQueue.play();
+        if(Application.currentPlaybackQueue.getQueue() != Application.potentialPlaybackQueue.getQueue()) {
+            Application.currentPlaybackQueue.setQueue(Application.potentialPlaybackQueue.getQueue());
         }
+        if(Application.currentPlaybackQueue.isReady()) {
+            Application.currentPlaybackQueue.play();
+        }
+        titleTableView.refresh();
     }
 
     @FXML
     protected void onPauseButtonClick() {
-        if(Application.playbackQueue.isPlaying()) {
-            Application.playbackQueue.pause();
-        } else if (!Application.playbackQueue.isPlaying() && Application.playbackQueue.isReady()) {
-            Application.playbackQueue.play();
+        if(Application.currentPlaybackQueue.isPlaying()) {
+            Application.currentPlaybackQueue.pause();
+        } else if (!Application.currentPlaybackQueue.isPlaying() && Application.currentPlaybackQueue.isReady()) {
+            Application.currentPlaybackQueue.play();
         }
+        titleTableView.refresh();
     }
 
     @FXML
     protected void onPreviousButtonClick() {
-        if(Application.playbackQueue.isReady()) {
-            Application.playbackQueue.previous();
+        if(Application.currentPlaybackQueue.isReady()) {
+            Application.currentPlaybackQueue.previous();
         }
+        titleTableView.refresh();
     }
 
     @FXML
     protected void onNextButtonClick() {
-        if(Application.playbackQueue.isReady()) {
-            Application.playbackQueue.next();
+        if(Application.currentPlaybackQueue.isReady()) {
+            Application.currentPlaybackQueue.next();
         }
+        titleTableView.refresh();
     }
 
     @FXML
     public void initPlaylistView() {
         playlistNameColumn.prefWidthProperty().bind(playlistTableView.widthProperty());
-//        playlistListView.setItems(getObservablePlaylists());
-//        playlistListView.setCellFactory(new Callback<ListView<Playlist>, ListCell<Playlist>>() {
-//            @Override
-//            public ListCell<Playlist> call(ListView<Playlist> listView) {
-//                return new ListCell<Playlist>() {
-//                    @Override
-//                    protected void updateItem(Playlist playlist, boolean empty) {
-//                        super.updateItem(playlist, empty);
-//                        if (empty || playlist == null) {
-//                            setText(null);
-//                        } else {
-//                            setText(playlist.getName());
-//                        }
-//                    }
-//                };
-//            }
-//        });
-//        playlistListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        playlistListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-//            if (newValue != null) {
-//                Application.playbackQueue.setQueue(newValue.getContent());
-//                titleListView.setItems(getObservableTitles(newValue));
-//            }
-//        });
+        playlistNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        playlistTableView.setItems(getObservablePlaylists());
+        playlistTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        playlistTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                Application.potentialPlaybackQueue.setQueue(newValue.getContent());
+                titleTableView.setItems(getObservableTitles(newValue));
+            }
+        });
     }
 
     @FXML
     public void initTitleView() {
-//        titleListView.setCellFactory(new Callback<ListView<Title>, ListCell<Title>>() {
-//            @Override
-//            public ListCell<Title> call(ListView<Title> listView) {
-//                return new ListCell<Title>() {
-//                    @Override
-//                    protected void updateItem(Title title, boolean empty) {
-//                        super.updateItem(title, empty);
-//                        if (empty || title == null) {
-//                            setText(null);
-//                        } else {
-//                            setText(title.getName());
-//                        }
-//                    }
-//                };
-//            }
-//        });
-//        titleListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-//        titleListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-//            if (newValue != null) {
-//                System.out.println(newValue);
-//            }
-//        });
+        playingColumn.setCellValueFactory(cellData -> cellData.getValue().playingStateProperty().asString());
+        titleNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+
+        titleTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        titleTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                System.out.println(newValue.getName());
+            }
+        });
     }
 
     @FXML
