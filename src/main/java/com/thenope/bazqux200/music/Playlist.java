@@ -10,13 +10,13 @@ public class Playlist {
     private Path path;
     private ArrayList<Title> content;
 
-    public Playlist(Path path) throws IOException {
-        this.path = path;
+    public Playlist(Path libraryLocation, Path playlistPath) throws IOException {
+        this.path = libraryLocation.resolve(playlistPath);
         BufferedReader reader = new BufferedReader(new FileReader(path.toString()));
         content = new ArrayList<Title>(0);
         String titlePathString;
         while((titlePathString = reader.readLine()) != null) {
-            Path titlePath = Path.of(titlePathString);
+            Path titlePath = libraryLocation.resolve(Path.of(titlePathString));
             content.add(new Title(titlePath));
         }
         reader.close();
@@ -28,6 +28,6 @@ public class Playlist {
 
     public String getName() {
         String[] splittedPath = path.toString().split("\\\\");
-        return splittedPath[splittedPath.length - 1];
+        return splittedPath[splittedPath.length - 1].replace(".m3u", "");
     }
 }

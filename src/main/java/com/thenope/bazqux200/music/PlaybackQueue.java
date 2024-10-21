@@ -1,5 +1,6 @@
 package com.thenope.bazqux200.music;
 
+import com.thenope.bazqux200.Application;
 import com.thenope.bazqux200.util.PlayingState;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class PlaybackQueue {
 
     public void setQueue(ArrayList<Title> newQueue) {
         if(isReady() && (currentTitle != null)) {
-            currentTitle.setInactive();
+            currentTitle.setPlayingState(PlayingState.INACTIVE);
         }
         this.queue = newQueue;
         this.currentTitleIndex = 0;
@@ -40,13 +41,22 @@ public class PlaybackQueue {
 
     public void play() {
         currentTitle = queue.get(currentTitleIndex);
+        Application.getAudioPlayer().setTitle(currentTitle);
         playingState = PlayingState.PLAYING;
-        currentTitle.play();
+        currentTitle.setPlayingState(playingState);
+        Application.getAudioPlayer().play();
+    }
+
+    public void proceed() {
+        playingState = PlayingState.PLAYING;
+        currentTitle.setPlayingState(playingState);
+        Application.getAudioPlayer().proceed();
     }
 
     public void pause() {
         playingState = PlayingState.PAUSED;
-        currentTitle.pause();
+        currentTitle.setPlayingState(playingState);
+        Application.getAudioPlayer().pause();
     }
 
     public void next() {
@@ -55,7 +65,7 @@ public class PlaybackQueue {
         } else {
             currentTitleIndex = 0;
         }
-        currentTitle.setInactive();
+        currentTitle.setPlayingState(PlayingState.INACTIVE);
         play();
     }
 
@@ -65,7 +75,12 @@ public class PlaybackQueue {
         } else {
             currentTitleIndex = queue.size() - 1;
         }
-        currentTitle.setInactive();
+        currentTitle.setPlayingState(PlayingState.INACTIVE);
         play();
+    }
+
+    public void setProgress(Number progress) {
+        long titleLength = Application.getAudioPlayer().getLength();
+        Application.getAudioPlayer().skipTo(titleLength * progress.longValue() / 100);
     }
 }

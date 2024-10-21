@@ -1,11 +1,13 @@
 package com.thenope.bazqux200;
 
-import com.thenope.bazqux200.music.PlaybackQueue;
 import com.thenope.bazqux200.music.Title;
 import com.thenope.bazqux200.music.Playlist;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.thenope.bazqux200.util.ObservablePlaylists.getObservablePlaylists;
 import static com.thenope.bazqux200.util.ObservableTitles.getObservableTitles;
@@ -36,38 +38,41 @@ public class MainViewController {
     private TableColumn<Title, String> durationColumn;
 
     @FXML
+    private Slider progressSlider;
+
+    @FXML
     protected void onPlayButtonClick() {
-        if(Application.currentPlaybackQueue.getQueue() != Application.potentialPlaybackQueue.getQueue()) {
-            Application.currentPlaybackQueue.setQueue(Application.potentialPlaybackQueue.getQueue());
+        if(Application.getCurrentPlaybackQueue().getQueue() != Application.getPotentialPlaybackQueue().getQueue()) {
+            Application.getCurrentPlaybackQueue().setQueue(Application.getPotentialPlaybackQueue().getQueue());
         }
-        if(Application.currentPlaybackQueue.isReady()) {
-            Application.currentPlaybackQueue.play();
+        if(Application.getCurrentPlaybackQueue().isReady()) {
+            Application.getCurrentPlaybackQueue().play();
         }
         titleTableView.refresh();
     }
 
     @FXML
     protected void onPauseButtonClick() {
-        if(Application.currentPlaybackQueue.isPlaying()) {
-            Application.currentPlaybackQueue.pause();
-        } else if (!Application.currentPlaybackQueue.isPlaying() && Application.currentPlaybackQueue.isReady()) {
-            Application.currentPlaybackQueue.play();
+        if(Application.getCurrentPlaybackQueue().isPlaying()) {
+            Application.getCurrentPlaybackQueue().pause();
+        } else if (!Application.getCurrentPlaybackQueue().isPlaying() && Application.getCurrentPlaybackQueue().isReady()) {
+            Application.getCurrentPlaybackQueue().proceed();
         }
         titleTableView.refresh();
     }
 
     @FXML
     protected void onPreviousButtonClick() {
-        if(Application.currentPlaybackQueue.isReady()) {
-            Application.currentPlaybackQueue.previous();
+        if(Application.getCurrentPlaybackQueue().isReady()) {
+            Application.getCurrentPlaybackQueue().previous();
         }
         titleTableView.refresh();
     }
 
     @FXML
     protected void onNextButtonClick() {
-        if(Application.currentPlaybackQueue.isReady()) {
-            Application.currentPlaybackQueue.next();
+        if(Application.getCurrentPlaybackQueue().isReady()) {
+            Application.getCurrentPlaybackQueue().next();
         }
         titleTableView.refresh();
     }
@@ -81,7 +86,7 @@ public class MainViewController {
         playlistTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         playlistTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                Application.potentialPlaybackQueue.setQueue(newValue.getContent());
+                Application.getPotentialPlaybackQueue().setQueue(newValue.getContent());
                 titleTableView.setItems(getObservableTitles(newValue));
             }
         });
@@ -101,8 +106,48 @@ public class MainViewController {
     }
 
     @FXML
+    protected void initProgressSlider() {
+        AtomicBoolean updatingSlider = new AtomicBoolean(false);
+
+        progressSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(!updatingSlider.get()) {
+                Application.getCurrentPlaybackQueue().setProgress(newValue);
+            }
+        });
+
+        Thread updateThread = new Thread(() -> {
+            while (true) {
+                if(Application.getCurrentPlaybackQueue().isPlaying()) {
+                    float position = (float) Application.getAudioPlayer().getTime() / Application.getAudioPlayer().getLength() * 100;
+
+                    Platform.runLater(() -> {
+                        updatingSlider.set(true);
+                        progressSlider.setValue(position);
+                        updatingSlider.set(false);
+
+                        if(position == 100) {
+                            Application.getCurrentPlaybackQueue().next();
+                            titleTableView.refresh();
+                        }
+                    });
+                }
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        updateThread.setDaemon(true);
+        updateThread.start();
+    }
+
+    @FXML
     public void initialize() {
         initPlaylistView();
         initTitleView();
+        initProgressSlider();
     }
 }

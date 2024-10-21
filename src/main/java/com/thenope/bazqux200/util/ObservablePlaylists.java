@@ -19,7 +19,7 @@ public class ObservablePlaylists {
 
         for(int i = 0; i < playlistPaths.toArray().length; i++) {
             try {
-                playlists.add(new Playlist((Path) playlistPaths.toArray()[i]));
+                playlists.add(new Playlist(libraryLocation, (Path) playlistPaths.toArray()[i]));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,6 @@
 package com.thenope.bazqux200;
 
+import com.thenope.bazqux200.music.AudioPlayer;
 import com.thenope.bazqux200.music.PlaybackQueue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,8 +11,21 @@ import java.util.Objects;
 
 
 public class Application extends javafx.application.Application {
-    static PlaybackQueue currentPlaybackQueue = new PlaybackQueue();
-    static PlaybackQueue potentialPlaybackQueue = new PlaybackQueue();
+    private static AudioPlayer audioPlayer;
+    private static PlaybackQueue currentPlaybackQueue;
+    private static PlaybackQueue potentialPlaybackQueue;
+
+    public static AudioPlayer getAudioPlayer() {
+        return audioPlayer;
+    }
+
+    public static PlaybackQueue getCurrentPlaybackQueue() {
+        return currentPlaybackQueue;
+    }
+
+    public static PlaybackQueue getPotentialPlaybackQueue() {
+        return potentialPlaybackQueue;
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -24,6 +38,9 @@ public class Application extends javafx.application.Application {
     }
 
     public static void main(String[] args) {
+        audioPlayer = new AudioPlayer();
+        currentPlaybackQueue = new PlaybackQueue();
+        potentialPlaybackQueue = new PlaybackQueue();
         launch();
     }
 }

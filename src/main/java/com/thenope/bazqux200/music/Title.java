@@ -35,15 +35,11 @@ public class Title {
         return name;
     }
 
-    public void play() {
-        this.playingState = new SimpleObjectProperty<>(PlayingState.PLAYING);
+    public Path getPath() {
+        return path;
     }
 
-    public void pause() {
-        this.playingState = new SimpleObjectProperty<>(PlayingState.PAUSED);
-    }
-
-    public void setInactive() {
-        this.playingState = new SimpleObjectProperty<>(PlayingState.INACTIVE);
+    public void setPlayingState(PlayingState newState) {
+        this.playingState = new SimpleObjectProperty<>(newState);
     }
 }
