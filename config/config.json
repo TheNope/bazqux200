@@ -1,4 +1,7 @@
 {
+    "playerConfig": {
+        "initialVolume": 25
+    },
     "libraryConfig": {
         "location": "test-library/library",
         "condensedLocation": "test-library/condensed"

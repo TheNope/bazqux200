@@ -1,5 +1,7 @@
 package com.thenope.bazqux200;
 
+import com.thenope.bazqux200.config.ConfigLoader;
+import com.thenope.bazqux200.config.classes.AppConfig;
 import com.thenope.bazqux200.music.Title;
 import com.thenope.bazqux200.music.Playlist;
 import javafx.application.Platform;
@@ -7,12 +9,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.thenope.bazqux200.util.ObservablePlaylists.getObservablePlaylists;
 import static com.thenope.bazqux200.util.ObservableTitles.getObservableTitles;
 
 public class MainViewController {
+    private AtomicBoolean updatingProgressSlider;
+
     @FXML
     private TableView<Playlist> playlistTableView;
 
@@ -38,7 +43,13 @@ public class MainViewController {
     private TableColumn<Title, String> durationColumn;
 
     @FXML
+    private Label progressLabel;
+
+    @FXML
     private Slider progressSlider;
+
+    @FXML
+    private Slider volumeSlider;
 
     @FXML
     protected void onPlayButtonClick() {
@@ -107,23 +118,44 @@ public class MainViewController {
 
     @FXML
     protected void initProgressSlider() {
-        AtomicBoolean updatingSlider = new AtomicBoolean(false);
+        updatingProgressSlider = new AtomicBoolean(false);
 
         progressSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(!updatingSlider.get()) {
+            if(!updatingProgressSlider.get()) {
                 Application.getCurrentPlaybackQueue().setProgress(newValue);
             }
         });
+    }
+
+    @FXML
+    protected void initVolumeSlider() {
+        int initialVolume = Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getPlayerConfig().getInitialVolume();
+        volumeSlider.setValue(initialVolume);
+        Application.getAudioPlayer().setVolume(initialVolume);
+
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            Application.getAudioPlayer().setVolume(newValue.intValue());
+        });
+    }
+
+    @FXML
+    public void initialize() {
+        initPlaylistView();
+        initTitleView();
+        initProgressSlider();
+        initVolumeSlider();
 
         Thread updateThread = new Thread(() -> {
             while (true) {
                 if(Application.getCurrentPlaybackQueue().isPlaying()) {
                     float position = (float) Application.getAudioPlayer().getTime() / Application.getAudioPlayer().getLength() * 100;
+                    String formattedProgress = Application.getAudioPlayer().formattedTime() + " / " + Application.getAudioPlayer().formattedLength();
 
                     Platform.runLater(() -> {
-                        updatingSlider.set(true);
+                        updatingProgressSlider.set(true);
                         progressSlider.setValue(position);
-                        updatingSlider.set(false);
+                        progressLabel.setText(formattedProgress);
+                        updatingProgressSlider.set(false);
 
                         if(position == 100) {
                             Application.getCurrentPlaybackQueue().next();
@@ -133,21 +165,13 @@ public class MainViewController {
                 }
 
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         });
-
         updateThread.setDaemon(true);
         updateThread.start();
-    }
-
-    @FXML
-    public void initialize() {
-        initPlaylistView();
-        initTitleView();
-        initProgressSlider();
     }
 }

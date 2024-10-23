@@ -1,8 +1,6 @@
 package com.thenope.bazqux200.music;
 
 import com.thenope.bazqux200.Application;
-import uk.co.caprica.vlcj.player.base.MediaPlayer;
-import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.component.AudioPlayerComponent;
 
 
@@ -17,8 +15,11 @@ public class AudioPlayer {
 
     public void setTitle(Title title) {
         audioPlayer.mediaPlayer().controls().stop();
-        System.out.println(getLength());
         audioPlayer.mediaPlayer().media().startPaused(title.getPath().toString());
+    }
+
+    public void setVolume(Integer volume) {
+        audioPlayer.mediaPlayer().audio().setVolume(volume);
     }
 
     public void play() {
@@ -33,6 +34,10 @@ public class AudioPlayer {
         audioPlayer.mediaPlayer().controls().pause();
     }
 
+    public void skipTo(long time) {
+        audioPlayer.mediaPlayer().controls().setTime(time);
+    }
+
     public long getTime() {
         return audioPlayer.mediaPlayer().status().time();
     }
@@ -41,7 +46,17 @@ public class AudioPlayer {
         return audioPlayer.mediaPlayer().status().length();
     }
 
-    public void skipTo(long time) {
-        audioPlayer.mediaPlayer().controls().setTime(time);
+    public String formattedTime() {
+        long time = Application.getAudioPlayer().getTime();
+        String currentSeconds = String.format("%02d", time / 1000 % 60);
+        String currentMinutes = String.valueOf(time / 1000 / 60);
+        return currentMinutes + ":" + currentSeconds;
+    }
+
+    public String formattedLength() {
+        long length = Application.getAudioPlayer().getLength();
+        String fullSeconds = String.format("%02d", length / 1000 % 60);
+        String fullMinutes = String.valueOf(length / 1000 / 60);
+        return fullMinutes + ":" + fullSeconds;
     }
 }

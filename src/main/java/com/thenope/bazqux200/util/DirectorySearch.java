@@ -1,7 +1,5 @@
 package com.thenope.bazqux200.util;
 
-import com.thenope.bazqux200.music.Playlist;
-
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
