@@ -31,6 +31,10 @@ public class PlaybackQueue {
         this.playingState = PlayingState.PAUSED;
     }
 
+    public Title getCurrentTitle() {
+        return currentTitle;
+    }
+
     public Boolean isReady() {
         return !queue.isEmpty() && (playingState != PlayingState.INACTIVE);
     }

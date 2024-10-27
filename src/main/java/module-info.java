@@ -5,6 +5,7 @@ module com.thenope.bazqux200 {
     requires org.controlsfx.controls;
     requires com.fasterxml.jackson.databind;
     requires uk.co.caprica.vlcj;
+    requires jaudiotagger;
 
     opens com.thenope.bazqux200.config to com.fasterxml.jackson.databind;
     opens com.thenope.bazqux200 to javafx.fxml;

@@ -107,6 +107,9 @@ public class MainViewController {
     public void initTitleView() {
         playingColumn.setCellValueFactory(cellData -> cellData.getValue().playingStateProperty().asString());
         titleNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
+        trackColumn.setCellValueFactory(cellData -> cellData.getValue().trackProperty());
+        albumColumn.setCellValueFactory(cellData -> cellData.getValue().albumProperty());
+        durationColumn.setCellValueFactory(cellData -> cellData.getValue().durationProperty());
 
         titleTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         titleTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -149,7 +152,10 @@ public class MainViewController {
             while (true) {
                 if(Application.getCurrentPlaybackQueue().isPlaying()) {
                     float position = (float) Application.getAudioPlayer().getTime() / Application.getAudioPlayer().getLength() * 100;
-                    String formattedProgress = Application.getAudioPlayer().formattedTime() + " / " + Application.getAudioPlayer().formattedLength();
+                    String formattedProgress =
+                            Application.getAudioPlayer().formattedTime()
+                            + " / "
+                            + Application.getCurrentPlaybackQueue().getCurrentTitle().durationProperty().getValue();
 
                     Platform.runLater(() -> {
                         updatingProgressSlider.set(true);
@@ -165,7 +171,7 @@ public class MainViewController {
                 }
 
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
