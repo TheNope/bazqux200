@@ -1,21 +1,28 @@
 package com.thenope.bazqux200.music;
 
 import com.thenope.bazqux200.Application;
+import com.thenope.bazqux200.util.PlayingMode;
 import com.thenope.bazqux200.util.PlayingState;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 public class PlaybackQueue {
     private ArrayList<Title> queue;
+    private ArrayList<Title> shuffledQueue;
     private Title currentTitle;
     private Integer currentTitleIndex;
     private PlayingState playingState;
+    private PlayingMode playingMode;
 
     public PlaybackQueue() {
-        queue = new ArrayList<Title>(0);
+        queue = new ArrayList<>(0);
+        shuffledQueue = new ArrayList<>(0);
         currentTitle = null;
         currentTitleIndex = null;
         playingState = PlayingState.INACTIVE;
+        playingMode = PlayingMode.REPEAT;
     }
 
     public ArrayList<Title> getQueue() {
@@ -35,6 +42,28 @@ public class PlaybackQueue {
         return currentTitle;
     }
 
+    public String getPlayingMode() {
+        return playingMode.toString();
+    }
+
+    public void nextPlayingMode() {
+        switch(playingMode) {
+            case PlayingMode.REPEAT:
+                playingMode = PlayingMode.RANDOM;
+                shuffledQueue = new ArrayList<>(queue);
+                Collections.shuffle(shuffledQueue);
+                playingMode = PlayingMode.SHUFFLE;
+                break;
+            case PlayingMode.SHUFFLE:
+                shuffledQueue = new ArrayList<>(0);
+                playingMode = PlayingMode.RANDOM;
+                break;
+            case PlayingMode.RANDOM:
+                shuffledQueue = new ArrayList<>(0);
+                playingMode = PlayingMode.REPEAT;
+        }
+    }
+
     public Boolean isReady() {
         return !queue.isEmpty() && (playingState != PlayingState.INACTIVE);
     }
@@ -44,7 +73,11 @@ public class PlaybackQueue {
     }
 
     public void play() {
-        currentTitle = queue.get(currentTitleIndex);
+        if(playingMode != PlayingMode.SHUFFLE) {
+            currentTitle = queue.get(currentTitleIndex);
+        } else {
+            currentTitle = shuffledQueue.get(currentTitleIndex);
+        }
         Application.getAudioPlayer().setTitle(currentTitle);
         playingState = PlayingState.PLAYING;
         currentTitle.setPlayingState(playingState);
@@ -64,7 +97,17 @@ public class PlaybackQueue {
     }
 
     public void next() {
-        if (currentTitleIndex < queue.size() - 1) {
+        if(playingMode == PlayingMode.RANDOM) {
+            Random random = new Random();
+            int newCurrentTitleIndex;
+            do {
+                newCurrentTitleIndex = random.nextInt() % queue.size();
+                if(newCurrentTitleIndex < 0) {
+                    newCurrentTitleIndex *= -1;
+                }
+            } while (newCurrentTitleIndex == currentTitleIndex);
+            currentTitleIndex = newCurrentTitleIndex;
+        } else if(currentTitleIndex < queue.size() - 1) {
             currentTitleIndex++;
         } else {
             currentTitleIndex = 0;

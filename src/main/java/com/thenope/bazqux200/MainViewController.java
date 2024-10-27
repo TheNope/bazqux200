@@ -19,6 +19,9 @@ public class MainViewController {
     private AtomicBoolean updatingProgressSlider;
 
     @FXML
+    private Button modeButton;
+
+    @FXML
     private TableView<Playlist> playlistTableView;
 
     @FXML
@@ -86,6 +89,12 @@ public class MainViewController {
             Application.getCurrentPlaybackQueue().next();
         }
         titleTableView.refresh();
+    }
+
+    @FXML
+    protected void onModeButtonClick() {
+        Application.getCurrentPlaybackQueue().nextPlayingMode();
+        modeButton.setText(Application.getCurrentPlaybackQueue().getPlayingMode());
     }
 
     @FXML
@@ -171,7 +180,7 @@ public class MainViewController {
                 }
 
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

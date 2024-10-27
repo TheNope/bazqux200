@@ -121,6 +121,7 @@
                            </font></Button>
                      </children>
                   </GridPane>
+                  <Button fx:id="modeButton" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onModeButtonClick" prefHeight="30.0" prefWidth="30.0" text="🔁" translateY="-10.0" GridPane.columnIndex="4" />
                </children>
             </GridPane>
             <GridPane fx:id="sliderGridPane" alignment="BOTTOM_LEFT" GridPane.rowIndex="3">
