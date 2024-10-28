@@ -15,14 +15,10 @@ public class ObservablePlaylists {
     public static ObservableList<Playlist> getObservablePlaylists() {
         Path libraryLocation = Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getLibraryConfig().getLocation();
         ArrayList<Path> playlistPaths = DirectorySearch.findPlaylists(libraryLocation);
-        ArrayList<Playlist> playlists = new ArrayList<Playlist>(0);
+        ArrayList<Playlist> playlists = new ArrayList<>(0);
 
         for(int i = 0; i < playlistPaths.toArray().length; i++) {
-            try {
-                playlists.add(new Playlist(libraryLocation, (Path) playlistPaths.toArray()[i]));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            playlists.add(new Playlist(libraryLocation, (Path) playlistPaths.toArray()[i]));
         }
         return FXCollections.observableArrayList(playlists);
     }

@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -104,10 +106,16 @@ public class MainViewController {
 
         playlistTableView.setItems(getObservablePlaylists());
         playlistTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        playlistTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        playlistTableView.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
-                Application.getPotentialPlaybackQueue().setQueue(newValue.getContent());
-                titleTableView.setItems(getObservableTitles(newValue));
+                ArrayList<Title> playlistContent = new ArrayList<>(0);
+                try {
+                    playlistContent = newValue.getContent();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Application.getPotentialPlaybackQueue().setQueue(playlistContent);
+                titleTableView.setItems(getObservableTitles(playlistContent));
             }
         });
     }
@@ -121,7 +129,7 @@ public class MainViewController {
         durationColumn.setCellValueFactory(cellData -> cellData.getValue().durationProperty());
 
         titleTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        titleTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        titleTableView.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
                 System.out.println(newValue.getName());
             }
@@ -132,7 +140,7 @@ public class MainViewController {
     protected void initProgressSlider() {
         updatingProgressSlider = new AtomicBoolean(false);
 
-        progressSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+        progressSlider.valueProperty().addListener((_, _, newValue) -> {
             if(!updatingProgressSlider.get()) {
                 Application.getCurrentPlaybackQueue().setProgress(newValue);
             }
@@ -145,7 +153,7 @@ public class MainViewController {
         volumeSlider.setValue(initialVolume);
         Application.getAudioPlayer().setVolume(initialVolume);
 
-        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+        volumeSlider.valueProperty().addListener((_, _, newValue) -> {
             Application.getAudioPlayer().setVolume(newValue.intValue());
         });
     }
