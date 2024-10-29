@@ -15,4 +15,6 @@ module com.thenope.bazqux200 {
     opens com.thenope.bazqux200.music to javafx.fxml;
     exports com.thenope.bazqux200.util;
     opens com.thenope.bazqux200.util to javafx.fxml;
+    exports com.thenope.bazqux200.views;
+    opens com.thenope.bazqux200.views to javafx.fxml;
 }

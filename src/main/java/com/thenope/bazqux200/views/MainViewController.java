@@ -1,13 +1,18 @@
-package com.thenope.bazqux200;
+package com.thenope.bazqux200.views;
 
+import com.thenope.bazqux200.Application;
 import com.thenope.bazqux200.config.ConfigLoader;
 import com.thenope.bazqux200.config.classes.AppConfig;
 import com.thenope.bazqux200.music.Title;
 import com.thenope.bazqux200.music.Playlist;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +60,22 @@ public class MainViewController {
 
     @FXML
     private Slider volumeSlider;
+
+    @FXML
+    protected void onCondenseMenuItemClick() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("views/condense-view.fxml"));
+            Parent root = fxmlLoader.load();
+
+            Stage condenseStage = new Stage();
+            condenseStage.setTitle("Condense");
+            condenseStage.setScene(new Scene(root));
+            condenseStage.setResizable(false);
+            condenseStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     protected void onPlayButtonClick() {

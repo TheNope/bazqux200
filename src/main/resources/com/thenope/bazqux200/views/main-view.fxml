@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -16,13 +17,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="mainVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.thenope.bazqux200.MainViewController">
+<VBox fx:id="mainVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.thenope.bazqux200.views.MainViewController">
     <children>
       <MenuBar fx:id="mainMenuBar">
         <menus>
           <Menu mnemonicParsing="false" text="File" />
           <Menu mnemonicParsing="false" text="Edit" />
-            <Menu mnemonicParsing="false" text="Library" />
+            <Menu mnemonicParsing="false" text="Library">
+               <items>
+                  <MenuItem fx:id="condenseMenuItem" mnemonicParsing="false" onAction="#onCondenseMenuItemClick" text="Condense" />
+               </items></Menu>
           <Menu mnemonicParsing="false" text="Help" />
         </menus>
       </MenuBar>
