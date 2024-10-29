@@ -9,14 +9,17 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
 public class DirectorySearch {
-    public static ArrayList<Path> findFiles(Path path, String extension) {
+    public static ArrayList<Path> findFiles(Path path, String[] extensions) {
         ArrayList<Path> files = new ArrayList<Path>(0);
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) {
-                    if(filePath.toString().endsWith(extension)) {
-                        files.add(filePath.toAbsolutePath());
+                    for(String extension : extensions) {
+                        if (filePath.toString().endsWith(extension)) {
+                            files.add(filePath.toAbsolutePath());
+                            break;
+                        }
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -33,6 +36,10 @@ public class DirectorySearch {
     }
 
     public static ArrayList<Path> findPlaylists(Path path) {
-        return findFiles(path, "m3u");
+        return findFiles(path, new String[]{"m3u"});
+    }
+
+    public static ArrayList<Path> findTitles(Path path) {
+        return findFiles(path, new String[]{"mp3", "flac"});
     }
 }

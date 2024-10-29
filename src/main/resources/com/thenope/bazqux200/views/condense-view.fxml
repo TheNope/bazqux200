@@ -25,7 +25,7 @@
                <children>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <ProgressBar layoutX="20.0" layoutY="29.0" prefWidth="600.0" progress="0.0" />
+                        <ProgressBar fx:id="copyProgressBar" layoutX="20.0" layoutY="29.0" prefWidth="600.0" progress="0.0" />
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
@@ -46,19 +46,19 @@
                            <children>
                               <Label text="Titles Copied:" GridPane.columnIndex="1" />
                               <Label text="Titles Already Existing:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Label text="Titles Removed:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Label text="Titles Not Found:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Label text="Titles Not Found:" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label prefHeight="0.0" prefWidth="84.0" text="Titles Removed:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                               <Label fx:id="copiedLabel" GridPane.columnIndex="2" />
-                              <Label fx:id="existLabel" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                              <Label fx:id="removedLabel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <Label fx:id="notFoundLabel" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                              <Label fx:id="existingLabel" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <Label fx:id="notFoundLabel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <Label fx:id="removedLabel" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                            </children>
                         </GridPane>
                      </children>
                   </AnchorPane>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
                      <children>
-                        <Button layoutX="280.0" layoutY="18.0" minWidth="80.0" mnemonicParsing="false" text="Start" />
+                        <Button fx:id="condenseButton" layoutX="280.0" layoutY="18.0" minWidth="80.0" mnemonicParsing="false" onAction="#onCondenseButtonClick" text="Start" />
                      </children>
                   </AnchorPane>
                </children>

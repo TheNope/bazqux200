@@ -14,7 +14,7 @@ public class LibraryConfig {
         this.location = Path.of(location);
     }
 
-    public Path getCondensedLocationLocation() {
+    public Path getCondensedLocation() {
         return condensedLocation;
     }
 

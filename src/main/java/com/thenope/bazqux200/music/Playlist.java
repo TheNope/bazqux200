@@ -19,18 +19,33 @@ public class Playlist {
         content = new ArrayList<>(0);
     }
 
+    public Path getPath() {
+        return path;
+    }
+
     public ArrayList<Title> getContent() throws IOException {
         if(content.toArray().length == 0) {
-            Path libraryLocation = Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getLibraryConfig().getLocation();
-            BufferedReader reader = new BufferedReader(new FileReader(path.toString()));
-            String titlePathString;
-            while((titlePathString = reader.readLine()) != null) {
-                Path titlePath = libraryLocation.resolve(Path.of(titlePathString));
-                content.add(new Title(titlePath));
+            ArrayList<Path> contentFilePaths = getContentFilePaths(false);
+            for(int i = 0; i < contentFilePaths.toArray().length; i++) {
+                content.add(new Title(contentFilePaths.get(i)));
             }
-            reader.close();
         }
         return content;
+    }
+
+    public ArrayList<Path> getContentFilePaths(Boolean absolute) throws IOException {
+        Path libraryLocation = Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getLibraryConfig().getLocation();
+        BufferedReader reader = new BufferedReader(new FileReader(path.toString()));
+        ArrayList<Path> contentFilePaths = new ArrayList<>(0);
+        String titlePathString;
+        while((titlePathString = reader.readLine()) != null) {
+            Path titlePath = libraryLocation.resolve(Path.of(titlePathString));
+            if(absolute) {
+                titlePath = titlePath.toAbsolutePath();
+            }
+            contentFilePaths.add(titlePath);
+        }
+        return contentFilePaths;
     }
 
     public String getName() {
