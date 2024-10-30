@@ -79,10 +79,10 @@ public class MainViewController {
 
     @FXML
     protected void onPlayButtonClick() {
-        if(Application.getCurrentPlaybackQueue().getQueue() != Application.getPotentialPlaybackQueue().getQueue()) {
+        if (Application.getCurrentPlaybackQueue().getQueue() != Application.getPotentialPlaybackQueue().getQueue()) {
             Application.getCurrentPlaybackQueue().setQueue(Application.getPotentialPlaybackQueue().getQueue());
         }
-        if(Application.getCurrentPlaybackQueue().isReady()) {
+        if (Application.getCurrentPlaybackQueue().isReady()) {
             Application.getCurrentPlaybackQueue().play();
         }
         titleTableView.refresh();
@@ -90,7 +90,7 @@ public class MainViewController {
 
     @FXML
     protected void onPauseButtonClick() {
-        if(Application.getCurrentPlaybackQueue().isPlaying()) {
+        if (Application.getCurrentPlaybackQueue().isPlaying()) {
             Application.getCurrentPlaybackQueue().pause();
         } else if (!Application.getCurrentPlaybackQueue().isPlaying() && Application.getCurrentPlaybackQueue().isReady()) {
             Application.getCurrentPlaybackQueue().proceed();
@@ -100,7 +100,7 @@ public class MainViewController {
 
     @FXML
     protected void onPreviousButtonClick() {
-        if(Application.getCurrentPlaybackQueue().isReady()) {
+        if (Application.getCurrentPlaybackQueue().isReady()) {
             Application.getCurrentPlaybackQueue().previous();
         }
         titleTableView.refresh();
@@ -108,7 +108,7 @@ public class MainViewController {
 
     @FXML
     protected void onNextButtonClick() {
-        if(Application.getCurrentPlaybackQueue().isReady()) {
+        if (Application.getCurrentPlaybackQueue().isReady()) {
             Application.getCurrentPlaybackQueue().next();
         }
         titleTableView.refresh();
@@ -162,7 +162,7 @@ public class MainViewController {
         updatingProgressSlider = new AtomicBoolean(false);
 
         progressSlider.valueProperty().addListener((_, _, newValue) -> {
-            if(!updatingProgressSlider.get()) {
+            if (!updatingProgressSlider.get()) {
                 Application.getCurrentPlaybackQueue().setProgress(newValue);
             }
         });
@@ -174,9 +174,7 @@ public class MainViewController {
         volumeSlider.setValue(initialVolume);
         Application.getAudioPlayer().setVolume(initialVolume);
 
-        volumeSlider.valueProperty().addListener((_, _, newValue) -> {
-            Application.getAudioPlayer().setVolume(newValue.intValue());
-        });
+        volumeSlider.valueProperty().addListener((_, _, newValue) -> Application.getAudioPlayer().setVolume(newValue.intValue()));
     }
 
     @FXML
@@ -188,7 +186,7 @@ public class MainViewController {
 
         Thread updateThread = new Thread(() -> {
             while (true) {
-                if(Application.getCurrentPlaybackQueue().isPlaying()) {
+                if (Application.getCurrentPlaybackQueue().isPlaying()) {
                     float position = (float) Application.getAudioPlayer().getTime() / Application.getAudioPlayer().getLength() * 100;
                     String formattedProgress =
                             Application.getAudioPlayer().formattedTime()

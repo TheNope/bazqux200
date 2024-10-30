@@ -10,12 +10,12 @@ import java.util.ArrayList;
 
 public class DirectorySearch {
     public static ArrayList<Path> findFiles(Path path, String[] extensions) {
-        ArrayList<Path> files = new ArrayList<Path>(0);
+        ArrayList<Path> files = new ArrayList<>(0);
         try {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(path, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) {
-                    for(String extension : extensions) {
+                    for (String extension : extensions) {
                         if (filePath.toString().endsWith(extension)) {
                             files.add(filePath.toAbsolutePath());
                             break;

@@ -18,13 +18,13 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 public class Condenser extends Task<Void> {
-    private Path libraryLocation;
-    private Path condensedLibraryLocation;
-    private DoubleProperty copyProgress;
-    private IntegerProperty countCopied;
-    private IntegerProperty countExisting;
-    private IntegerProperty countNotFound;
-    private IntegerProperty countRemoved;
+    private final Path libraryLocation;
+    private final Path condensedLibraryLocation;
+    private final DoubleProperty copyProgress;
+    private final IntegerProperty countCopied;
+    private final IntegerProperty countExisting;
+    private final IntegerProperty countNotFound;
+    private final IntegerProperty countRemoved;
 
     public Condenser(LibraryConfig libraryConfig) {
         libraryLocation = libraryConfig.getLocation();
@@ -62,7 +62,7 @@ public class Condenser extends Task<Void> {
 
     public void copyTitles(ArrayList<Playlist> playlists) {
         ArrayList<Path> allTitles = new ArrayList<>(0);
-        for(int i = 0; i < playlists.toArray().length; i++) {
+        for (int i = 0; i < playlists.toArray().length; i++) {
             try {
                 allTitles.addAll(playlists.get(i).getContentFilePaths(false));
             } catch(IOException e) {
@@ -71,7 +71,7 @@ public class Condenser extends Task<Void> {
                 return;
             }
         }
-        if(Files.notExists(condensedLibraryLocation)) {
+        if (Files.notExists(condensedLibraryLocation)) {
             try {
                 Files.createDirectories(condensedLibraryLocation);
             } catch(IOException e) {
@@ -82,18 +82,18 @@ public class Condenser extends Task<Void> {
         }
         int processedTitles = 0;
         int numTitles = allTitles.toArray().length;
-        for(int i = 0; i < numTitles; i++) {
+        for (int i = 0; i < numTitles; i++) {
             int finalProcessedTitles = ++processedTitles;
             Path titlePath = allTitles.get(i);
             Path condensedTitlePath = Path.of(titlePath.toString().replace(libraryLocation.toString(), condensedLibraryLocation.toString()));
-            if(Files.exists(condensedTitlePath)) {
+            if (Files.exists(condensedTitlePath)) {
                 Platform.runLater(() -> {
                     countExisting.set(countExisting.get() + 1);
                     updateProgress(finalProcessedTitles, numTitles);
                 });
                 continue;
             }
-            if(Files.notExists(titlePath)) {
+            if (Files.notExists(titlePath)) {
                 System.out.println(titlePath);
                 Platform.runLater(() -> {
                     countNotFound.set(countNotFound.get() + 1);
@@ -101,10 +101,10 @@ public class Condenser extends Task<Void> {
                 });
                 continue;
             }
-            if(Files.notExists(condensedTitlePath.getParent())) {
+            if (Files.notExists(condensedTitlePath.getParent())) {
                 try {
                     Files.createDirectories(condensedTitlePath.getParent());
-                } catch(IOException e) {
+                } catch (IOException e) {
                     // Copying failed
                     e.printStackTrace();
                     continue;
@@ -116,7 +116,7 @@ public class Condenser extends Task<Void> {
                     updateProgress(finalProcessedTitles, numTitles);
                 });
                 Files.copy(titlePath, condensedTitlePath);
-            } catch(IOException e) {
+            } catch (IOException e) {
                 // Copying failed
                 e.printStackTrace();
             }
@@ -126,22 +126,20 @@ public class Condenser extends Task<Void> {
     public void removeTitles(ArrayList<Playlist> playlists) {
         ArrayList<Path> currentTitles = DirectorySearch.findTitles(condensedLibraryLocation);
         ArrayList<Path> allTitles = new ArrayList<>(0);
-        for(int i = 0; i < playlists.toArray().length; i++) {
+        for (int i = 0; i < playlists.toArray().length; i++) {
             try {
                 allTitles.addAll(playlists.get(i).getContentFilePaths(true));
-            } catch(IOException e) {
+            } catch (IOException e) {
                 // Removing failed
                 e.printStackTrace();
                 return;
             }
         }
-        for(int i = 0; i < currentTitles.toArray().length; i++) {
+        for (int i = 0; i < currentTitles.toArray().length; i++) {
             Path currentTitle = currentTitles.get(i);
-            if(!allTitles.contains(Path.of(currentTitle.toString().replace(condensedLibraryLocation.toString(), libraryLocation.toString())))) {
+            if (!allTitles.contains(Path.of(currentTitle.toString().replace(condensedLibraryLocation.toString(), libraryLocation.toString())))) {
                 try {
-                    Platform.runLater(() -> {
-                        countRemoved.set(countRemoved.get() + 1);
-                    });
+                    Platform.runLater(() -> countRemoved.set(countRemoved.get() + 1));
                     Files.delete(currentTitle);
                 } catch (IOException e) {
                     // Removing failed
@@ -152,14 +150,14 @@ public class Condenser extends Task<Void> {
     }
 
     public void copyPlaylists(ArrayList<Playlist> playlists) {
-        for(int i = 0; i < playlists.toArray().length; i++) {
+        for (int i = 0; i < playlists.toArray().length; i++) {
             try {
                 Files.copy(
                         playlists.get(i).getPath(),
                         Path.of(playlists.get(i).getPath().toString().replace(libraryLocation.toString(), condensedLibraryLocation.toString())),
                         StandardCopyOption.REPLACE_EXISTING
                 );
-            } catch(IOException e) {
+            } catch (IOException e) {
                 // Copying failed
                 e.printStackTrace();
                 return;
@@ -175,7 +173,7 @@ public class Condenser extends Task<Void> {
     }
 
     @Override
-    protected Void call() throws Exception {
+    protected Void call() {
         condense();
         return null;
     }

@@ -16,7 +16,7 @@ public class ObservablePlaylists {
         ArrayList<Path> playlistPaths = DirectorySearch.findPlaylists(libraryLocation);
         ArrayList<Playlist> playlists = new ArrayList<>(0);
 
-        for(int i = 0; i < playlistPaths.toArray().length; i++) {
+        for (int i = 0; i < playlistPaths.toArray().length; i++) {
             playlists.add(new Playlist(libraryLocation, (Path) playlistPaths.toArray()[i]));
         }
         return playlists;

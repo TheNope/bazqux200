@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Playlist {
-    private Path path;
-    private ArrayList<Title> content;
+    private final Path path;
+    private final ArrayList<Title> content;
 
     public Playlist(Path libraryLocation, Path playlistPath) {
         path = libraryLocation.resolve(playlistPath);
@@ -24,9 +24,9 @@ public class Playlist {
     }
 
     public ArrayList<Title> getContent() throws IOException {
-        if(content.toArray().length == 0) {
+        if (content.toArray().length == 0) {
             ArrayList<Path> contentFilePaths = getContentFilePaths(false);
-            for(int i = 0; i < contentFilePaths.toArray().length; i++) {
+            for (int i = 0; i < contentFilePaths.toArray().length; i++) {
                 content.add(new Title(contentFilePaths.get(i)));
             }
         }
@@ -38,9 +38,9 @@ public class Playlist {
         BufferedReader reader = new BufferedReader(new FileReader(path.toString()));
         ArrayList<Path> contentFilePaths = new ArrayList<>(0);
         String titlePathString;
-        while((titlePathString = reader.readLine()) != null) {
+        while ((titlePathString = reader.readLine()) != null) {
             Path titlePath = libraryLocation.resolve(Path.of(titlePathString));
-            if(absolute) {
+            if (absolute) {
                 titlePath = titlePath.toAbsolutePath();
             }
             contentFilePaths.add(titlePath);

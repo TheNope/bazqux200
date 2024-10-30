@@ -30,7 +30,7 @@ public class PlaybackQueue {
     }
 
     public void setQueue(ArrayList<Title> newQueue) {
-        if(isReady() && (currentTitle != null)) {
+        if (isReady() && (currentTitle != null)) {
             currentTitle.setPlayingState(PlayingState.INACTIVE);
         }
         this.queue = newQueue;
@@ -47,7 +47,7 @@ public class PlaybackQueue {
     }
 
     public void nextPlayingMode() {
-        switch(playingMode) {
+        switch (playingMode) {
             case PlayingMode.REPEAT:
                 playingMode = PlayingMode.RANDOM;
                 shuffledQueue = new ArrayList<>(queue);
@@ -73,7 +73,7 @@ public class PlaybackQueue {
     }
 
     public void play() {
-        if(playingMode != PlayingMode.SHUFFLE) {
+        if (playingMode != PlayingMode.SHUFFLE) {
             currentTitle = queue.get(currentTitleIndex);
         } else {
             currentTitle = shuffledQueue.get(currentTitleIndex);
@@ -97,7 +97,7 @@ public class PlaybackQueue {
     }
 
     public void next() {
-        if(playingMode == PlayingMode.RANDOM) {
+        if (playingMode == PlayingMode.RANDOM) {
             Random random = new Random();
             int newCurrentTitleIndex;
             do {
@@ -107,7 +107,7 @@ public class PlaybackQueue {
                 }
             } while (newCurrentTitleIndex == currentTitleIndex);
             currentTitleIndex = newCurrentTitleIndex;
-        } else if(currentTitleIndex < queue.size() - 1) {
+        } else if (currentTitleIndex < queue.size() - 1) {
             currentTitleIndex++;
         } else {
             currentTitleIndex = 0;

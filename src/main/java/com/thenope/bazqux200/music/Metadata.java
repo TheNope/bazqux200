@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public class Metadata {
-    private AudioFile title;
-    private Tag titleTags;
+    private final AudioFile title;
+    private final Tag titleTags;
 
     public Metadata(Path titlePath) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         title = AudioFileIO.read(new File(titlePath.toString()));

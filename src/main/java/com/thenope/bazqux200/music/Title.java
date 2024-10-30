@@ -9,7 +9,7 @@ import javafx.beans.property.StringProperty;
 import java.nio.file.Path;
 
 public class Title {
-    private Path path;
+    private final Path path;
     private ObjectProperty<PlayingState> playingState;
     private StringProperty name;
     private StringProperty track;
@@ -31,10 +31,6 @@ public class Title {
         }
         path = titlePath;
         playingState = new SimpleObjectProperty<>(PlayingState.INACTIVE);
-    }
-
-    public String getPlayingState() {
-        return playingState.toString();
     }
 
     public ObjectProperty<PlayingState> playingStateProperty() {

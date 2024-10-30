@@ -6,7 +6,7 @@ import uk.co.caprica.vlcj.player.component.AudioPlayerComponent;
 
 
 public class AudioPlayer {
-    private AudioPlayerComponent audioPlayer;
+    private final AudioPlayerComponent audioPlayer;
 
     public AudioPlayer() {
         audioPlayer = new AudioPlayerComponent();
