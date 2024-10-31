@@ -1,6 +1,7 @@
 package com.thenope.bazqux200.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thenope.bazqux200.Application;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class ConfigLoader {
         try {
             return configLoader.load(configClass);
         } catch (IOException e) {
-            e.printStackTrace();
+            Application.getLogger().error(e.getMessage());
             return null;
         }
 

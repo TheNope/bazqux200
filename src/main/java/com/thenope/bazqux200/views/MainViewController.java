@@ -73,7 +73,7 @@ public class MainViewController {
             condenseStage.setResizable(false);
             condenseStage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            Application.getLogger().error(e.getMessage());
         }
     }
 
@@ -133,7 +133,7 @@ public class MainViewController {
                 try {
                     playlistContent = newValue.getContent();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Application.getLogger().error(e.getMessage());
                 }
                 Application.getPotentialPlaybackQueue().setQueue(playlistContent);
                 titleTableView.setItems(getObservableTitles(playlistContent));
@@ -209,7 +209,7 @@ public class MainViewController {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Application.getLogger().error(e.getMessage());
                 }
             }
         });

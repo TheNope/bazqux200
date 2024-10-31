@@ -1,5 +1,6 @@
 package com.thenope.bazqux200.condense;
 
+import com.thenope.bazqux200.Application;
 import com.thenope.bazqux200.config.classes.LibraryConfig;
 import com.thenope.bazqux200.music.Playlist;
 import com.thenope.bazqux200.util.DirectorySearch;
@@ -67,7 +68,7 @@ public class Condenser extends Task<Void> {
                 allTitles.addAll(playlists.get(i).getContentFilePaths(false));
             } catch(IOException e) {
                 // Copying failed
-                e.printStackTrace();
+                Application.getLogger().error(e.getMessage());
                 return;
             }
         }
@@ -76,7 +77,7 @@ public class Condenser extends Task<Void> {
                 Files.createDirectories(condensedLibraryLocation);
             } catch(IOException e) {
                 // Copying failed
-                e.printStackTrace();
+                Application.getLogger().error(e.getMessage());
                 return;
             }
         }
@@ -87,6 +88,7 @@ public class Condenser extends Task<Void> {
             Path titlePath = allTitles.get(i);
             Path condensedTitlePath = Path.of(titlePath.toString().replace(libraryLocation.toString(), condensedLibraryLocation.toString()));
             if (Files.exists(condensedTitlePath)) {
+                Application.getLogger().info("File already exists: {}", titlePath);
                 Platform.runLater(() -> {
                     countExisting.set(countExisting.get() + 1);
                     updateProgress(finalProcessedTitles, numTitles);
@@ -94,7 +96,7 @@ public class Condenser extends Task<Void> {
                 continue;
             }
             if (Files.notExists(titlePath)) {
-                System.out.println(titlePath);
+                Application.getLogger().error("File not found: {}", titlePath);
                 Platform.runLater(() -> {
                     countNotFound.set(countNotFound.get() + 1);
                     updateProgress(finalProcessedTitles, numTitles);
@@ -106,19 +108,20 @@ public class Condenser extends Task<Void> {
                     Files.createDirectories(condensedTitlePath.getParent());
                 } catch (IOException e) {
                     // Copying failed
-                    e.printStackTrace();
+                    Application.getLogger().error(e.getMessage());
                     continue;
                 }
             }
             try {
+                Files.copy(titlePath, condensedTitlePath);
+                Application.getLogger().info("File copied: {}", titlePath);
                 Platform.runLater(() -> {
                     countCopied.set(countCopied.get() + 1);
                     updateProgress(finalProcessedTitles, numTitles);
                 });
-                Files.copy(titlePath, condensedTitlePath);
             } catch (IOException e) {
                 // Copying failed
-                e.printStackTrace();
+                Application.getLogger().error(e.getMessage());
             }
         }
     }
@@ -131,7 +134,7 @@ public class Condenser extends Task<Void> {
                 allTitles.addAll(playlists.get(i).getContentFilePaths(true));
             } catch (IOException e) {
                 // Removing failed
-                e.printStackTrace();
+                Application.getLogger().error(e.getMessage());
                 return;
             }
         }
@@ -139,11 +142,12 @@ public class Condenser extends Task<Void> {
             Path currentTitle = currentTitles.get(i);
             if (!allTitles.contains(Path.of(currentTitle.toString().replace(condensedLibraryLocation.toString(), libraryLocation.toString())))) {
                 try {
-                    Platform.runLater(() -> countRemoved.set(countRemoved.get() + 1));
                     Files.delete(currentTitle);
+                    Platform.runLater(() -> countRemoved.set(countRemoved.get() + 1));
+                    Application.getLogger().info("File removed: {}", currentTitle);
                 } catch (IOException e) {
                     // Removing failed
-                    e.printStackTrace();
+                    Application.getLogger().error(e.getMessage());
                 }
             }
         }
@@ -159,7 +163,7 @@ public class Condenser extends Task<Void> {
                 );
             } catch (IOException e) {
                 // Copying failed
-                e.printStackTrace();
+                Application.getLogger().error(e.getMessage());
                 return;
             }
         }

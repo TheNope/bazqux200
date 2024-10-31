@@ -8,12 +8,15 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Objects;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public class Application extends javafx.application.Application {
     private static AudioPlayer audioPlayer;
     private static PlaybackQueue currentPlaybackQueue;
     private static PlaybackQueue potentialPlaybackQueue;
+    private static Logger LOGGER;
 
     public static AudioPlayer getAudioPlayer() {
         return audioPlayer;
@@ -25,6 +28,10 @@ public class Application extends javafx.application.Application {
 
     public static PlaybackQueue getPotentialPlaybackQueue() {
         return potentialPlaybackQueue;
+    }
+
+    public static Logger getLogger() {
+        return LOGGER;
     }
 
     @Override
@@ -41,6 +48,11 @@ public class Application extends javafx.application.Application {
         audioPlayer = new AudioPlayer();
         currentPlaybackQueue = new PlaybackQueue();
         potentialPlaybackQueue = new PlaybackQueue();
+        LOGGER = LogManager.getLogger();
+        LOGGER.debug("Debug-Nachricht");
+        LOGGER.info("Info-Nachricht");
+        LOGGER.warn("Warn-Nachricht");
+        LOGGER.error("Error-Nachricht");
         launch();
     }
 }

@@ -82,6 +82,7 @@ public class PlaybackQueue {
         playingState = PlayingState.PLAYING;
         currentTitle.setPlayingState(playingState);
         Application.getAudioPlayer().play();
+        Application.getLogger().info("Now playing: {}", currentTitle.getName());
     }
 
     public void proceed() {

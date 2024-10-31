@@ -1,5 +1,7 @@
 package com.thenope.bazqux200.util;
 
+import com.thenope.bazqux200.Application;
+
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -30,7 +32,7 @@ public class DirectorySearch {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            Application.getLogger().error(e.getMessage());
         }
         return files;
     }
