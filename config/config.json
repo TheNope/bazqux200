@@ -1,9 +1,12 @@
 {
+    "condenseConfig": {
+        "location": "test-library/library",
+        "compress": true
+    },
     "playerConfig": {
         "initialVolume": 25
     },
     "libraryConfig": {
-        "location": "test-library/library",
-        "condensedLocation": "test-library/condensed"
+        "location": "test-library/library"
     }
 }

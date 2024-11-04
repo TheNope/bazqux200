@@ -3,7 +3,6 @@ package com.thenope.bazqux200.views;
 import com.thenope.bazqux200.condense.Condenser;
 import com.thenope.bazqux200.config.ConfigLoader;
 import com.thenope.bazqux200.config.classes.AppConfig;
-import com.thenope.bazqux200.config.classes.LibraryConfig;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -33,8 +32,8 @@ public class CondenseViewController {
     @FXML
     protected void onCondenseButtonClick() {
         condenseButton.setDisable(true);
-        LibraryConfig libraryConfig = Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getLibraryConfig();
-        Condenser condenser = new Condenser(libraryConfig);
+        AppConfig appConfig = Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class));
+        Condenser condenser = new Condenser(appConfig.getLibraryConfig().getLocation(), appConfig.getCondenseConfig());
         condenser.setOnSucceeded(_ -> condenseButton.setDisable(false));
 
         copyProgressBar.progressProperty().bind(condenser.copyProgressProperty());

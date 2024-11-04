@@ -7,6 +7,7 @@ module com.thenope.bazqux200 {
     requires uk.co.caprica.vlcj;
     requires jaudiotagger;
     requires org.apache.logging.log4j;
+    requires jave.core;
 
     opens com.thenope.bazqux200.config to com.fasterxml.jackson.databind;
     opens com.thenope.bazqux200 to javafx.fxml;

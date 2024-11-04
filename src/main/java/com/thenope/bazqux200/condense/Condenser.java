@@ -1,7 +1,7 @@
 package com.thenope.bazqux200.condense;
 
 import com.thenope.bazqux200.Application;
-import com.thenope.bazqux200.config.classes.LibraryConfig;
+import com.thenope.bazqux200.config.classes.CondenseConfig;
 import com.thenope.bazqux200.music.Playlist;
 import com.thenope.bazqux200.util.DirectorySearch;
 import com.thenope.bazqux200.util.ObservablePlaylists;
@@ -19,17 +19,17 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 public class Condenser extends Task<Void> {
+    private final CondenseConfig condenseConfig;
     private final Path libraryLocation;
-    private final Path condensedLibraryLocation;
     private final DoubleProperty copyProgress;
     private final IntegerProperty countCopied;
     private final IntegerProperty countExisting;
     private final IntegerProperty countNotFound;
     private final IntegerProperty countRemoved;
 
-    public Condenser(LibraryConfig libraryConfig) {
-        libraryLocation = libraryConfig.getLocation();
-        condensedLibraryLocation = libraryConfig.getCondensedLocation();
+    public Condenser(Path libraryLocation, CondenseConfig condenseConfig) {
+        this.condenseConfig = condenseConfig;
+        this.libraryLocation = libraryLocation;
         copyProgress = new SimpleDoubleProperty(0);
         countCopied = new SimpleIntegerProperty(0);
         countExisting = new SimpleIntegerProperty(0);
@@ -72,9 +72,9 @@ public class Condenser extends Task<Void> {
                 return;
             }
         }
-        if (Files.notExists(condensedLibraryLocation)) {
+        if (Files.notExists(condenseConfig.getLocation())) {
             try {
-                Files.createDirectories(condensedLibraryLocation);
+                Files.createDirectories(condenseConfig.getLocation());
             } catch(IOException e) {
                 // Copying failed
                 Application.getLogger().error(e.getMessage());
@@ -86,8 +86,11 @@ public class Condenser extends Task<Void> {
         for (int i = 0; i < numTitles; i++) {
             int finalProcessedTitles = ++processedTitles;
             Path titlePath = allTitles.get(i);
-            Path condensedTitlePath = Path.of(titlePath.toString().replace(libraryLocation.toString(), condensedLibraryLocation.toString()));
-            if (Files.exists(condensedTitlePath)) {
+            Path condensedTitlePath = Path.of(titlePath.toString().replace(libraryLocation.toString(), condenseConfig.getLocation().toString()));
+            Path compressedTitlePath = Path.of(condensedTitlePath.toString().replace("flac", "mp3"));
+
+            // Check if title already exists in condensed location
+            if (Files.exists(condensedTitlePath) || (Files.exists(compressedTitlePath) && condenseConfig.getCompress())) {
                 Application.getLogger().info("File already exists: {}", titlePath);
                 Platform.runLater(() -> {
                     countExisting.set(countExisting.get() + 1);
@@ -95,6 +98,8 @@ public class Condenser extends Task<Void> {
                 });
                 continue;
             }
+
+            // Check if file exists in library
             if (Files.notExists(titlePath)) {
                 Application.getLogger().error("File not found: {}", titlePath);
                 Platform.runLater(() -> {
@@ -103,6 +108,8 @@ public class Condenser extends Task<Void> {
                 });
                 continue;
             }
+
+            // Create directory if it doesn't exist
             if (Files.notExists(condensedTitlePath.getParent())) {
                 try {
                     Files.createDirectories(condensedTitlePath.getParent());
@@ -112,14 +119,21 @@ public class Condenser extends Task<Void> {
                     continue;
                 }
             }
+
+            // Copy or compress and copy
             try {
-                Files.copy(titlePath, condensedTitlePath);
-                Application.getLogger().info("File copied: {}", titlePath);
+                if (condenseConfig.getCompress() && !titlePath.toString().endsWith("mp3")) {
+                    Compressor.compress(titlePath, compressedTitlePath);
+                    Application.getLogger().info("File compressed and copied: {}", titlePath);
+                } else {
+                    Files.copy(titlePath, condensedTitlePath);
+                    Application.getLogger().info("File copied: {}", titlePath);
+                }
                 Platform.runLater(() -> {
                     countCopied.set(countCopied.get() + 1);
                     updateProgress(finalProcessedTitles, numTitles);
                 });
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Copying failed
                 Application.getLogger().error(e.getMessage());
             }
@@ -127,7 +141,7 @@ public class Condenser extends Task<Void> {
     }
 
     public void removeTitles(ArrayList<Playlist> playlists) {
-        ArrayList<Path> currentTitles = DirectorySearch.findTitles(condensedLibraryLocation);
+        ArrayList<Path> currentTitles = DirectorySearch.findTitles(condenseConfig.getLocation());
         ArrayList<Path> allTitles = new ArrayList<>(0);
         for (int i = 0; i < playlists.toArray().length; i++) {
             try {
@@ -140,7 +154,7 @@ public class Condenser extends Task<Void> {
         }
         for (int i = 0; i < currentTitles.toArray().length; i++) {
             Path currentTitle = currentTitles.get(i);
-            if (!allTitles.contains(Path.of(currentTitle.toString().replace(condensedLibraryLocation.toString(), libraryLocation.toString())))) {
+            if (!allTitles.contains(Path.of(currentTitle.toString().replace(condenseConfig.getLocation().toString(), libraryLocation.toString())))) {
                 try {
                     Files.delete(currentTitle);
                     Platform.runLater(() -> countRemoved.set(countRemoved.get() + 1));
@@ -156,11 +170,14 @@ public class Condenser extends Task<Void> {
     public void copyPlaylists(ArrayList<Playlist> playlists) {
         for (int i = 0; i < playlists.toArray().length; i++) {
             try {
-                Files.copy(
-                        playlists.get(i).getPath(),
-                        Path.of(playlists.get(i).getPath().toString().replace(libraryLocation.toString(), condensedLibraryLocation.toString())),
-                        StandardCopyOption.REPLACE_EXISTING
-                );
+                Path source = playlists.get(i).getPath();
+                Path destination = Path.of(playlists.get(i).getPath().toString().replace(libraryLocation.toString(), condenseConfig.getLocation().toString()));
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                if (condenseConfig.getCompress()) {
+                    String playlistContent = new String(Files.readAllBytes(source));
+                    playlistContent = playlistContent.replace(".flac", ".mp3");
+                    Files.write(destination, playlistContent.getBytes());
+                }
             } catch (IOException e) {
                 // Copying failed
                 Application.getLogger().error(e.getMessage());
@@ -170,10 +187,11 @@ public class Condenser extends Task<Void> {
     }
 
     public void condense() {
-        ArrayList<Playlist> playlists = ObservablePlaylists.getPlaylists();
+        ArrayList<Playlist> playlists = ObservablePlaylists.getPlaylists(libraryLocation);
         copyTitles(playlists);
-        removeTitles(playlists);
         copyPlaylists(playlists);
+        playlists = ObservablePlaylists.getPlaylists(condenseConfig.getLocation());
+        removeTitles(playlists);
     }
 
     @Override

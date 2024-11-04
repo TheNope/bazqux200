@@ -49,10 +49,6 @@ public class Application extends javafx.application.Application {
         currentPlaybackQueue = new PlaybackQueue();
         potentialPlaybackQueue = new PlaybackQueue();
         LOGGER = LogManager.getLogger();
-        LOGGER.debug("Debug-Nachricht");
-        LOGGER.info("Info-Nachricht");
-        LOGGER.warn("Warn-Nachricht");
-        LOGGER.error("Error-Nachricht");
         launch();
     }
 }

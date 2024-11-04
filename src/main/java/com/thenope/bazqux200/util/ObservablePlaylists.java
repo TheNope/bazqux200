@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class ObservablePlaylists {
-    public static ArrayList<Playlist> getPlaylists() {
+    public static ArrayList<Playlist> getPlaylists(Path dir) {
         Path libraryLocation = Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getLibraryConfig().getLocation();
-        ArrayList<Path> playlistPaths = DirectorySearch.findPlaylists(libraryLocation);
+        ArrayList<Path> playlistPaths = DirectorySearch.findPlaylists(dir);
         ArrayList<Playlist> playlists = new ArrayList<>(0);
 
         for (int i = 0; i < playlistPaths.toArray().length; i++) {
@@ -22,7 +22,7 @@ public class ObservablePlaylists {
         return playlists;
     }
 
-    public static ObservableList<Playlist> getObservablePlaylists() {
-        return FXCollections.observableArrayList(getPlaylists());
+    public static ObservableList<Playlist> getObservablePlaylists(Path dir) {
+        return FXCollections.observableArrayList(getPlaylists(dir));
     }
 }

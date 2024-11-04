@@ -125,7 +125,7 @@ public class MainViewController {
         playlistNameColumn.prefWidthProperty().bind(playlistTableView.widthProperty());
         playlistNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        playlistTableView.setItems(getObservablePlaylists());
+        playlistTableView.setItems(getObservablePlaylists(Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getLibraryConfig().getLocation()));
         playlistTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         playlistTableView.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
