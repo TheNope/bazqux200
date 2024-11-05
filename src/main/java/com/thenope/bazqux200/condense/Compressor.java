@@ -8,18 +8,17 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class Compressor {
-    public static void compress(Path source, Path destination) throws EncoderException {
+    public static void compress(Path source, Path destination, int bitrate) throws EncoderException {
         File sourceFile = new File(source.toString());
         File destinationFile = new File(destination.toString());
 
         AudioAttributes audio = new AudioAttributes();
         audio.setCodec("libmp3lame");
-        audio.setBitRate(320000);
+        audio.setBitRate(bitrate * 1000);
         audio.setChannels(2);
         audio.setSamplingRate(44100);
 
         EncodingAttributes attrs = new EncodingAttributes();
-        //attrs.setFormat("mp3");
         attrs.setAudioAttributes(audio);
 
         Encoder encoder = new Encoder();

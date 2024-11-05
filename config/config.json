@@ -1,7 +1,10 @@
 {
     "condenseConfig": {
         "location": "test-library/library",
-        "compress": true
+        "compressionConfig": {
+            "enabled": true,
+            "bitrate": 320
+        }
     },
     "playerConfig": {
         "initialVolume": 25

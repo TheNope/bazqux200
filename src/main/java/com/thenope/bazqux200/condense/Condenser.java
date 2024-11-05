@@ -90,7 +90,7 @@ public class Condenser extends Task<Void> {
             Path compressedTitlePath = Path.of(condensedTitlePath.toString().replace("flac", "mp3"));
 
             // Check if title already exists in condensed location
-            if (Files.exists(condensedTitlePath) || (Files.exists(compressedTitlePath) && condenseConfig.getCompress())) {
+            if (Files.exists(condensedTitlePath) || (Files.exists(compressedTitlePath) && condenseConfig.getCompressionConfig().getEnabled())) {
                 Application.getLogger().info("File already exists: {}", titlePath);
                 Platform.runLater(() -> {
                     countExisting.set(countExisting.get() + 1);
@@ -122,8 +122,8 @@ public class Condenser extends Task<Void> {
 
             // Copy or compress and copy
             try {
-                if (condenseConfig.getCompress() && !titlePath.toString().endsWith("mp3")) {
-                    Compressor.compress(titlePath, compressedTitlePath);
+                if (condenseConfig.getCompressionConfig().getEnabled() && !titlePath.toString().endsWith("mp3")) {
+                    Compressor.compress(titlePath, compressedTitlePath, condenseConfig.getCompressionConfig().getBitrate());
                     Application.getLogger().info("File compressed and copied: {}", titlePath);
                 } else {
                     Files.copy(titlePath, condensedTitlePath);
@@ -173,7 +173,7 @@ public class Condenser extends Task<Void> {
                 Path source = playlists.get(i).getPath();
                 Path destination = Path.of(playlists.get(i).getPath().toString().replace(libraryLocation.toString(), condenseConfig.getLocation().toString()));
                 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-                if (condenseConfig.getCompress()) {
+                if (condenseConfig.getCompressionConfig().getEnabled()) {
                     String playlistContent = new String(Files.readAllBytes(source));
                     playlistContent = playlistContent.replace(".flac", ".mp3");
                     Files.write(destination, playlistContent.getBytes());
