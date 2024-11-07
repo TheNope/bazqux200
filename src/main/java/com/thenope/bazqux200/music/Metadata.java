@@ -22,19 +22,23 @@ public class Metadata {
         titleTags = title.getTag();
     }
 
-    public String getTitle () {
+    public String getTitle() {
         return titleTags.getFirst(FieldKey.TITLE);
     }
 
-    public String getTrack () {
+    public String getTrack() {
         return titleTags.getFirst(FieldKey.TRACK);
     }
 
-    public String getAlbum () {
+    public String getAlbum() {
         return titleTags.getFirst(FieldKey.ALBUM);
     }
 
-    public String getFormattedDuration () {
+    public long getBitrate() {
+        return title.getAudioHeader().getBitRateAsNumber();
+    }
+
+    public String getFormattedDuration() {
         int duration = title.getAudioHeader().getTrackLength();
         String durationSeconds = String.format("%02d", duration  % 60);
         String durationMinutes = String.valueOf(duration / 60);

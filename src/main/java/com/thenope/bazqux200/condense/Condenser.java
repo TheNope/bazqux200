@@ -2,6 +2,7 @@ package com.thenope.bazqux200.condense;
 
 import com.thenope.bazqux200.Application;
 import com.thenope.bazqux200.config.classes.CondenseConfig;
+import com.thenope.bazqux200.music.Metadata;
 import com.thenope.bazqux200.music.Playlist;
 import com.thenope.bazqux200.util.DirectorySearch;
 import com.thenope.bazqux200.util.ObservablePlaylists;
@@ -59,6 +60,20 @@ public class Condenser extends Task<Void> {
 
     private void updateProgress(int processedTitles, int numTitles) {
         copyProgress.set((double) processedTitles / numTitles);
+    }
+
+    private boolean compressCondition(Path titlePath) {
+        if (!condenseConfig.getCompressionConfig().getEnabled()) return false;
+        else if (titlePath.toString().endsWith("flac")) return true;
+        else {
+            try{
+                if (new Metadata(titlePath).getBitrate() > condenseConfig.getCompressionConfig().getBitrate()) return true;
+            } catch (Exception e) {
+                Application.getLogger().error(e.getMessage());
+                return true;
+            }
+        }
+        return false;
     }
 
     public void copyTitles(ArrayList<Playlist> playlists) {
@@ -122,7 +137,7 @@ public class Condenser extends Task<Void> {
 
             // Copy or compress and copy
             try {
-                if (condenseConfig.getCompressionConfig().getEnabled() && !titlePath.toString().endsWith("mp3")) {
+                if (compressCondition(titlePath)) {
                     Compressor.compress(titlePath, compressedTitlePath, condenseConfig.getCompressionConfig().getBitrate());
                     Application.getLogger().info("File compressed and copied: {}", titlePath);
                 } else {
