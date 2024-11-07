@@ -1,5 +1,7 @@
 package com.thenope.bazqux200.condense;
 
+import com.thenope.bazqux200.Application;
+import com.thenope.bazqux200.music.Metadata;
 import ws.schild.jave.*;
 import ws.schild.jave.encode.AudioAttributes;
 import ws.schild.jave.encode.EncodingAttributes;
@@ -8,9 +10,9 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class Compressor {
-    public static void compress(Path source, Path destination, int bitrate) throws EncoderException {
+    public static void compress(Path source, Path target, int bitrate) throws EncoderException {
         File sourceFile = new File(source.toString());
-        File destinationFile = new File(destination.toString());
+        File targetFile = new File(target.toString());
 
         AudioAttributes audio = new AudioAttributes();
         audio.setCodec("libmp3lame");
@@ -22,6 +24,13 @@ public class Compressor {
         attrs.setAudioAttributes(audio);
 
         Encoder encoder = new Encoder();
-        encoder.encode(new MultimediaObject(sourceFile), destinationFile, attrs);
+        encoder.encode(new MultimediaObject(sourceFile), targetFile, attrs);
+
+        try {
+            Metadata.copyArtwork(sourceFile, targetFile);
+        }
+        catch (Exception e) {
+            Application.getLogger().error(e.getMessage());
+        }
     }
 }

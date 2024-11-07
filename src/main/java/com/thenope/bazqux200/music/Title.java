@@ -1,10 +1,12 @@
 package com.thenope.bazqux200.music;
 
+import com.thenope.bazqux200.Application;
 import com.thenope.bazqux200.util.PlayingState;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.image.Image;
 
 import java.nio.file.Path;
 
@@ -15,6 +17,7 @@ public class Title {
     private StringProperty track;
     private StringProperty album;
     private StringProperty duration;
+    private Image artwork;
 
     public Title(Path titlePath) {
         try {
@@ -55,6 +58,18 @@ public class Title {
 
     public StringProperty durationProperty() {
         return duration;
+    }
+
+    public Image imageProperty() {
+        if (artwork == null) {
+            try {
+                Metadata metadataReader = new Metadata(path);
+                artwork =  metadataReader.getArtwork();
+            } catch(Exception e) {
+                Application.getLogger().error(e.getMessage());
+            }
+        }
+        return artwork;
     }
 
     public Path getPath() {

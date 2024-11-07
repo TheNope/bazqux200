@@ -1,0 +1,15 @@
+{
+    "condenseConfig": {
+        "location": "",
+        "compressionConfig": {
+            "enabled": true,
+            "bitrate": 320
+        }
+    },
+    "playerConfig": {
+        "initialVolume": 25
+    },
+    "libraryConfig": {
+        "location": ""
+    }
+}

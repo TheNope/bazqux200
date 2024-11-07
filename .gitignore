@@ -3,6 +3,7 @@ test-library
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+config.json
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

@@ -13,10 +13,15 @@ import org.apache.logging.log4j.Logger;
 
 
 public class Application extends javafx.application.Application {
+    private static Stage stage;
     private static AudioPlayer audioPlayer;
     private static PlaybackQueue currentPlaybackQueue;
     private static PlaybackQueue potentialPlaybackQueue;
     private static Logger LOGGER;
+
+    public static void setTitle(String title) {
+        stage.setTitle(title);
+    }
 
     public static AudioPlayer getAudioPlayer() {
         return audioPlayer;
@@ -39,6 +44,7 @@ public class Application extends javafx.application.Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("views/main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
         scene.getStylesheets().add(Objects.requireNonNull(Application.class.getResource("css/default.css")).toString());
+        Application.stage = stage;
         stage.setTitle("bazqux200");
         stage.setScene(scene);
         stage.show();

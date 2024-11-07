@@ -129,7 +129,6 @@ public class Condenser extends Task<Void> {
                 try {
                     Files.createDirectories(condensedTitlePath.getParent());
                 } catch (IOException e) {
-                    // Copying failed
                     Application.getLogger().error(e.getMessage());
                     continue;
                 }
@@ -149,7 +148,6 @@ public class Condenser extends Task<Void> {
                     updateProgress(finalProcessedTitles, numTitles);
                 });
             } catch (Exception e) {
-                // Copying failed
                 Application.getLogger().error(e.getMessage());
             }
         }
@@ -162,7 +160,6 @@ public class Condenser extends Task<Void> {
             try {
                 allTitles.addAll(playlists.get(i).getContentFilePaths(true));
             } catch (IOException e) {
-                // Removing failed
                 Application.getLogger().error(e.getMessage());
                 return;
             }
@@ -175,7 +172,6 @@ public class Condenser extends Task<Void> {
                     Platform.runLater(() -> countRemoved.set(countRemoved.get() + 1));
                     Application.getLogger().info("File removed: {}", currentTitle);
                 } catch (IOException e) {
-                    // Removing failed
                     Application.getLogger().error(e.getMessage());
                 }
             }
@@ -186,15 +182,14 @@ public class Condenser extends Task<Void> {
         for (int i = 0; i < playlists.toArray().length; i++) {
             try {
                 Path source = playlists.get(i).getPath();
-                Path destination = Path.of(playlists.get(i).getPath().toString().replace(libraryLocation.toString(), condenseConfig.getLocation().toString()));
-                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                Path target = Path.of(playlists.get(i).getPath().toString().replace(libraryLocation.toString(), condenseConfig.getLocation().toString()));
+                Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
                 if (condenseConfig.getCompressionConfig().getEnabled()) {
                     String playlistContent = new String(Files.readAllBytes(source));
                     playlistContent = playlistContent.replace(".flac", ".mp3");
-                    Files.write(destination, playlistContent.getBytes());
+                    Files.write(target, playlistContent.getBytes());
                 }
             } catch (IOException e) {
-                // Copying failed
                 Application.getLogger().error(e.getMessage());
                 return;
             }

@@ -12,6 +12,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -33,6 +35,12 @@ public class MainViewController {
 
     @FXML
     private TableColumn<Playlist, String> playlistNameColumn;
+
+    @FXML
+    private BorderPane artworkBorderPane;
+
+    @FXML
+    private ImageView artworkImageView;
 
     @FXML
     private TableView<Title> titleTableView;
@@ -142,6 +150,12 @@ public class MainViewController {
     }
 
     @FXML
+    public void initArtworkImageView() {
+        artworkBorderPane.widthProperty().addListener((_, _, newVal) -> artworkImageView.setFitWidth(newVal.doubleValue()));
+        artworkBorderPane.heightProperty().addListener((_, _, newVal) -> artworkImageView.setFitHeight(newVal.doubleValue()));
+    }
+
+    @FXML
     public void initTitleView() {
         playingColumn.setCellValueFactory(cellData -> cellData.getValue().playingStateProperty().asString());
         titleNameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
@@ -180,6 +194,7 @@ public class MainViewController {
     @FXML
     public void initialize() {
         initPlaylistView();
+        initArtworkImageView();
         initTitleView();
         initProgressSlider();
         initVolumeSlider();
@@ -187,17 +202,20 @@ public class MainViewController {
         Thread updateThread = new Thread(() -> {
             while (true) {
                 if (Application.getCurrentPlaybackQueue().isPlaying()) {
+                    Title currentTitle = Application.getCurrentPlaybackQueue().getCurrentTitle();
                     float position = (float) Application.getAudioPlayer().getTime() / Application.getAudioPlayer().getLength() * 100;
                     String formattedProgress =
                             Application.getAudioPlayer().formattedTime()
                             + " / "
-                            + Application.getCurrentPlaybackQueue().getCurrentTitle().durationProperty().getValue();
+                            + currentTitle.durationProperty().getValue();
 
                     Platform.runLater(() -> {
+                        Application.setTitle("bazqux200 - " + "[" + currentTitle.albumProperty().getValue() + "] " + currentTitle.getName());
                         updatingProgressSlider.set(true);
                         progressSlider.setValue(position);
                         progressLabel.setText(formattedProgress);
                         updatingProgressSlider.set(false);
+                        artworkImageView.setImage(currentTitle.imageProperty());
 
                         if(position == 100) {
                             Application.getCurrentPlaybackQueue().next();
