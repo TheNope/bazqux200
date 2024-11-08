@@ -41,10 +41,10 @@ public class Application extends javafx.application.Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        Application.stage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("views/main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
         scene.getStylesheets().add(Objects.requireNonNull(Application.class.getResource("css/default.css")).toString());
-        Application.stage = stage;
         stage.setTitle("bazqux200");
         stage.setScene(scene);
         stage.show();

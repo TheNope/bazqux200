@@ -74,10 +74,12 @@ public class MainViewController {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("views/condense-view.fxml"));
             Parent root = fxmlLoader.load();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(Objects.requireNonNull(Application.class.getResource("css/default.css")).toString());
 
             Stage condenseStage = new Stage();
             condenseStage.setTitle("Condense");
-            condenseStage.setScene(new Scene(root));
+            condenseStage.setScene(scene);
             condenseStage.setResizable(false);
             condenseStage.show();
         } catch (IOException e) {
@@ -130,7 +132,7 @@ public class MainViewController {
 
     @FXML
     public void initPlaylistView() {
-        playlistNameColumn.prefWidthProperty().bind(playlistTableView.widthProperty());
+        //playlistNameColumn.prefWidthProperty().bind(playlistTableView.widthProperty());
         playlistNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         playlistTableView.setItems(getObservablePlaylists(Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getLibraryConfig().getLocation()));
