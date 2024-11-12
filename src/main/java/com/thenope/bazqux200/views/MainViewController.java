@@ -88,9 +88,21 @@ public class MainViewController {
     }
 
     @FXML
+    protected void onTitleContextMenuPlayClick() {
+        Title selectedTitle = titleTableView.getSelectionModel().selectedItemProperty().get();
+        if (selectedTitle == null) return;
+        if (Application.getCurrentPlaybackQueue().getQueue() != Application.getPotentialPlaybackQueue().getQueue()) {
+            Application.getCurrentPlaybackQueue().setQueue(Application.getPotentialPlaybackQueue());
+        }
+        Application.getCurrentPlaybackQueue().setCurrentTitle(selectedTitle);
+        Application.getCurrentPlaybackQueue().play();
+        titleTableView.refresh();
+    }
+
+    @FXML
     protected void onPlayButtonClick() {
         if (Application.getCurrentPlaybackQueue().getQueue() != Application.getPotentialPlaybackQueue().getQueue()) {
-            Application.getCurrentPlaybackQueue().setQueue(Application.getPotentialPlaybackQueue().getQueue());
+            Application.getCurrentPlaybackQueue().setQueue(Application.getPotentialPlaybackQueue());
         }
         if (Application.getCurrentPlaybackQueue().isReady()) {
             Application.getCurrentPlaybackQueue().play();
@@ -127,7 +139,8 @@ public class MainViewController {
     @FXML
     protected void onModeButtonClick() {
         Application.getCurrentPlaybackQueue().nextPlayingMode();
-        modeButton.setText(Application.getCurrentPlaybackQueue().getPlayingMode());
+        Application.getPotentialPlaybackQueue().nextPlayingMode();
+        modeButton.setText(Application.getCurrentPlaybackQueue().getStringPlayingMode());
     }
 
     @FXML
@@ -164,13 +177,7 @@ public class MainViewController {
         trackColumn.setCellValueFactory(cellData -> cellData.getValue().trackProperty());
         albumColumn.setCellValueFactory(cellData -> cellData.getValue().albumProperty());
         durationColumn.setCellValueFactory(cellData -> cellData.getValue().durationProperty());
-
         titleTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        titleTableView.getSelectionModel().selectedItemProperty().addListener((_, _, newValue) -> {
-            if (newValue != null) {
-                System.out.println(newValue.getName());
-            }
-        });
     }
 
     @FXML
