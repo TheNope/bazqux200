@@ -11,15 +11,13 @@
     -fx-text-fill: -fx-main-text-color;
 }
 
-//--container--
+//--containers--
 GridPane {
     -fx-background-color: -fx-main-background-color;
 }
 
 .split-pane {
-    -fx-border-color: -fx-main-background-color;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+    -fx-box-border: -fx-accent-color;
 }
 
 .split-pane-divider {

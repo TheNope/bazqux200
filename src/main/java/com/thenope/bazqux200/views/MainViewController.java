@@ -75,7 +75,7 @@ public class MainViewController {
             FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("views/condense-view.fxml"));
             Parent root = fxmlLoader.load();
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(Objects.requireNonNull(Application.class.getResource("css/default.css")).toString());
+            scene.getStylesheets().add(Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getPlayerConfig().getTheme().toString());
 
             Stage condenseStage = new Stage();
             condenseStage.setTitle("Condense");

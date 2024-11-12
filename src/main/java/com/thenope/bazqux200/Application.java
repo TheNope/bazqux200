@@ -1,5 +1,7 @@
 package com.thenope.bazqux200;
 
+import com.thenope.bazqux200.config.ConfigLoader;
+import com.thenope.bazqux200.config.classes.AppConfig;
 import com.thenope.bazqux200.music.AudioPlayer;
 import com.thenope.bazqux200.music.PlaybackQueue;
 import javafx.fxml.FXMLLoader;
@@ -44,7 +46,8 @@ public class Application extends javafx.application.Application {
         Application.stage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("views/main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
-        scene.getStylesheets().add(Objects.requireNonNull(Application.class.getResource("css/default.css")).toString());
+        System.out.println(Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getPlayerConfig().getTheme().toString());
+        scene.getStylesheets().add(Objects.requireNonNull(ConfigLoader.getConfig(AppConfig.class)).getPlayerConfig().getTheme().toString());
         stage.setTitle("bazqux200");
         stage.setScene(scene);
         stage.show();
